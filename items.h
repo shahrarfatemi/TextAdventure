@@ -38,6 +38,6 @@ extern Item items[];
 #define safe (&items+16)
 #define grandchild (&items+17)
 
-#define MAX_ITEM 11
+#define MAX_ITEM 12
 
 #endif

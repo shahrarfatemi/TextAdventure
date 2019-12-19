@@ -24,78 +24,74 @@ int after_(Room room){
     return score;
 }
 
-void nothing(){
-    printf("just checking\n");
-}
-
-Room get_next_room(Room rooms[],Room current_room,char* dir){
+int get_next_room(Room rooms[],Room current_room,char* dir){
     Room temp = {"","",0,NULL,0};
     if(strcmp(current_room.name,"Entry Room") == 0){
         if(strcmp(dir,"north") == 0){
-            return rooms[2];
+            return 2;
         }
         else if(strcmp(dir,"west") == 0){
-            return rooms[1];
+            return 1;
         }
     }
     else if(strcmp(current_room.name,"Store Room") == 0){
         if(strcmp(dir,"north") == 0){
-            return rooms[5];
+            return 5;
         }
         else if(strcmp(dir,"east") == 0){
-            return rooms[0];
+            return 0;
         }
     }
     else if(strcmp(current_room.name,"Hall Room") == 0){
         if(strcmp(dir,"up") == 0){
-            return rooms[4];
+            return 4;
         }
         else if(strcmp(dir,"south") == 0){
-            return rooms[0];
+            return 0;
         }
         else if(strcmp(dir,"east") == 0){
-            return rooms[6];
+            return 6;
         }
     }
     else if(strcmp(current_room.name,"Dark Room") == 0){
         if(strcmp(dir,"south") == 0){
-            return rooms[5];
+            return 5;
         }
         else if(strcmp(dir,"west") == 0){
-            return rooms[1];
+            return 1;
         }
     }
     else if(strcmp(current_room.name,"Library Room") == 0){
         if(strcmp(dir,"down") == 0){
-            return rooms[2];
+            return 2;
         }
     }
     else if(strcmp(current_room.name,"Dressing Room") == 0){
         if(strcmp(dir,"north") == 0){
-            return rooms[3];
+            return 3;
         }
         else if(strcmp(dir,"south") == 0){
-            return rooms[1];
+            return 1;
         }
         else if(strcmp(dir,"up") == 0){
-            return rooms[7];
+            return 7;
         }
     }
     else if(strcmp(current_room.name,"Dim Room") == 0){
         if(strcmp(dir,"west") == 0){
-            return rooms[2];
+            return 2;
         }
     }
     else if(strcmp(current_room.name,"Cell Room") == 0){
         if(strcmp(dir,"down") == 0){
-            return rooms[5];
+            return 5;
         }
     }
-    return temp;
+    return -1;
 }
 
 void describe_current_room(Room room){
-    printf("You are now in %s\n",room.name);
+    printf("Now in %s\n",room.name);
     printf("%s",room.description);
 }
 

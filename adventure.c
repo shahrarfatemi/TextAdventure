@@ -5,8 +5,9 @@
 #define false 0
 #define sack_capacity 4
 
-static char input[50] = "look around";
+static char input[50] = "";
 int total_score;
+int number_of_items;
 Room current_room;
 
 #define entry_room rooms[0]
@@ -18,21 +19,21 @@ Room current_room;
 #define dim_room rooms[6]
 #define cell_room rooms[7]
 //Room rooms[MAX_ROOM];
-const char str1[] = "This is the entrance and the first room.It has got 2 doors.\nnorth) Hall Room,\nwest) Store Room\n";
+const char str1[] = "It has got 2 doors.\nnorth) Hall Room,\nwest) Store Room\n";
 
-const char str2[] = "This is the store room.It has got 2 doors.\neast) Entry Room,\nnorth) Dressing Room\n\n";
+const char str2[] = "It has got 2 doors.\neast) Entry Room,\nnorth) Dressing Room\n\n";
 
-const char str3[] = "This is the hall room.It has got 3 doors.\nup) Library Room,\nsouth) Entry Room,\neast) Dim Room\n";
+const char str3[] = "It has got 3 doors.\nup) Library Room,\nsouth) Entry Room,\neast) Dim Room\n";
 
-const char str4[] = "This is the dark room.It has got 1 door.\nsouth) Dressing Room\n";
+const char str4[] = "It has got 1 door.\nsouth) Dressing Room\n";
 
-const char str5[] = "This is the library room.It has got 1 door.\ndown) Hall Room\n";
+const char str5[] = "It has got 1 door.\ndown) Hall Room\n";
 
-const char str6[] = "This is the dressing room.It has got 3 doors.\nnorth) Dark Room,\nsouth) Store Room,\nup) Cell Room\n";
+const char str6[] = "It has got 3 doors.\nnorth) Dark Room,\nsouth) Store Room,\nup) Cell Room\n";
 
-const char str7[] = "This is the dim room.It has got 1 doors.\nwest) Hall Room\n";
+const char str7[] = "It has got 1 doors.\nwest) Hall Room\n";
 
-const char str8[] = "This is the cell.It has got 1 door.\ndown) Dressing Room\n";
+const char str8[] = "It has got 1 door.\ndown) Dressing Room\n";
 
 Room entry_adj_rooms[3];
 Room store_adj_rooms[2];
@@ -45,13 +46,31 @@ Room cell_adj_rooms[1];
 Room rooms[MAX_ROOM];
 
 Item items[MAX_ITEM];
-
-
+Item my_items[sack_capacity];
 
 int get_input()
 {
     printf("--> ");
     return fgets(input, sizeof(input), stdin) != NULL; 
+}
+
+int drop_item_from_my_bag(char * name){
+    int found = -1;
+    for(int i = 0 ; i < number_of_items ; i++){
+        if(strcmp(my_items[i].name,name) == 0){
+            found = i;
+            break;
+        }
+    }
+    if(found != -1){
+        while(found + 1 < number_of_items ){
+            my_items[found] = my_items[found+1];
+            found++;
+        }
+        number_of_items--;
+        return found;
+    }
+    return found;
 }
 
 int parse_and_exec( char * cmd)
@@ -73,18 +92,42 @@ int parse_and_exec( char * cmd)
         else if(strcmp(verb, "go") == 0)
         {
             printf("Let's %s to %s\n", verb, noun);
-            Room temp = get_next_room(rooms,current_room,noun);
-            if(strcmp(temp.name,"")==0){
+            int index = get_next_room(rooms,current_room,noun);
+            if(index < 0){
                 printf("invalid command\n");
             }
             else{
-                current_room = temp;
+                current_room = rooms[index];
                 describe_current_room(current_room);
             }
         }
         else if(strcmp(verb, "take") == 0)
         {
-            printf("Let's %s the %s\n", verb, noun);
+            int index = get_item(items,noun,MAX_ITEM);
+            int taken = -1;
+            for(int i = 0 ; i < number_of_items ; i++){
+                if(strcmp(my_items[i].name,noun) == 0){
+                    taken = 1;
+                }
+            }
+            if(taken == -1){
+                if(index < 0){
+                    printf("invalid name of item\n");    
+                }
+                else{
+                    if(number_of_items < sack_capacity){
+                        my_items[number_of_items++] = items[index];
+                        printf("Let's %s the %s\n", verb, noun);
+                    }
+                    else{
+                        printf("Your bag is full,you have to drop something at first\n");
+                    }
+                }
+            }
+            else{
+                printf("You already have this\n");
+            }
+            
         }
         else if(strcmp(verb, "use") == 0)
         {
@@ -92,7 +135,20 @@ int parse_and_exec( char * cmd)
         }
         else if(strcmp(verb, "drop") == 0)
         {
-            printf("Let's %s the %s\n", verb, noun);
+            int result = drop_item_from_my_bag(noun);
+            if(result == -1){
+                printf("invalid name of item\n");    
+            }
+            else{
+                int index = get_item(items,noun,MAX_ITEM);
+                if(index < 0){
+                    printf("invalid name of item\n");    
+                }
+                else{
+                    items[index].location = &current_room;
+                }
+                printf("Let's %s the %s\n", verb, noun);
+            }
         }
         else 
         {
@@ -105,12 +161,11 @@ int parse_and_exec( char * cmd)
 }
 
 void before_entering(){
-    before_(rooms[0]);
+    //
 }
 
 void after_entering(){
-    printf("in after\n");
-    after_(rooms[0]);
+    //
 }
 
 void init(){
@@ -147,36 +202,36 @@ void init(){
 
     cell_adj_rooms[0] = dressing_room;
 
-    items[0] = (Item){"Match","It can be used to make fire or light",&entry_room,NULL,50,STATE_UNUSED};
-    items[1] = (Item){"Candle","It can be use to lighten a space.It can be used a maximum of 3 times.",&entry_room,NULL,100,STATE_UNUSED};
-    items[2] = (Item){"Key-Ring","A set of seys.",&hall_room,NULL,200,STATE_UNUSED};
-    items[3] = (Item){"Knife","This knife is a really sharp one",&store_room,NULL,200,STATE_UNUSED};
-    items[4] = (Item){"Ball","This is a nice blue ball",&dim_room,NULL,150,STATE_UNUSED};
-    items[5] = (Item){"Spell-Card","A spell is imprinted on it.",&hall_room,NULL,250,STATE_UNUSED};
-    items[6] = (Item){"Fire-Fly Box","A box of fire flies.",&hall_room,NULL,300,STATE_UNUSED};
-    items[7] = (Item){"Locket","An expensive locket",&dim_room,NULL,500,STATE_UNUSED};
-    items[8] = (Item){"Invisible CLoak","Wearing it can make someone invisible",&store_room,NULL,300,STATE_UNUSED};
-    items[9] = (Item){"Diamond","A pearl",&store_room,NULL,300,STATE_UNUSED};
-    items[10] = (Item){"The GrandChild of the Witch","She is the grandchild of the witch that captured Rohan",&dark_room,NULL,500,STATE_UNUSED};
+    items[0] = (Item){"match","It can be used to make fire or light",&entry_room,NULL,50,STATE_UNUSED};
+    items[1] = (Item){"candle","It can be use to lighten a space.It can be used a maximum of 3 times.",&entry_room,NULL,100,STATE_UNUSED};
+    items[2] = (Item){"keyring","A set of seys.",&hall_room,NULL,200,STATE_UNUSED};
+    items[3] = (Item){"knife","This knife is a really sharp one",&store_room,NULL,200,STATE_UNUSED};
+    items[4] = (Item){"ball","This is a nice blue ball",&dim_room,NULL,150,STATE_UNUSED};
+    items[5] = (Item){"spellcard","A spell is imprinted on it.",&hall_room,NULL,250,STATE_UNUSED};
+    items[6] = (Item){"fireflies","A box of fire flies.",&hall_room,NULL,300,STATE_UNUSED};
+    items[7] = (Item){"locket","An expensive locket",&dim_room,NULL,500,STATE_UNUSED};
+    items[8] = (Item){"invisible-cloak","Wearing it can make someone invisible",&store_room,NULL,300,STATE_UNUSED};
+    items[9] = (Item){"diamond","A pearl",&store_room,NULL,300,STATE_UNUSED};
+    items[10] = (Item){"grandchild","She is the grandchild of the witch that captured Rohan",&dark_room,NULL,500,STATE_UNUSED};
+    items[11] = (Item){"sculpture","The sculpture of a previous captive",&library_room,NULL,300,STATE_UNUSED};
 
 }
 
 int main()
 {
     init();
-    nothing();
+    printf("Dhrubo and Rohan are two friends.One day while Rohan was absent from the game in the evening,Dhrubo went to Rohan's house for bringing him.\n");
+    printf("Dhrubo met Rohan's parents and got to know that the witch residing at the peak of a nearby hill took Rohan to get him married to her grandchild.\n");
+    printf("Dhrubo instantly went towards the hill to rescue his friend.At the top of the hill,he found a big two-storey house\n");
     printf("Welcome to Dhrubo's rescue mission!\n\n");
     current_room = rooms[0];
+    number_of_items = 0;
     total_score = 50;
-    after_(rooms[0]);
+    describe_current_room(current_room);
+
     while(parse_and_exec(input) && get_input())
     {
         // main loop
-        //before entering
-        before_entering();
-
-        //after entering
-        after_entering();
     }
 
     printf("Bye! \n");
