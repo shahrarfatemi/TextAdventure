@@ -13,6 +13,10 @@
 #define dim_room rooms[6]
 #define cell_room rooms[7]
 
+int dog_avoided = 0;
+int sculp_avoided = 0;
+int cell_unlocked = 0;
+
 int before_(Room room){
     int score;
     return score;
@@ -74,7 +78,12 @@ int get_next_room(Room rooms[],Room current_room,char* dir){
             return 1;
         }
         else if(strcmp(dir,"up") == 0){
-            return 7;
+            if(rooms[7].state == STATE_UNAVAILABLE){
+                return -2;//means unavailable
+            }
+            else{
+                return 7;
+            }
         }
     }
     else if(strcmp(current_room.name,"Dim Room") == 0){
@@ -92,15 +101,39 @@ int get_next_room(Room rooms[],Room current_room,char* dir){
 
 void describe_current_room(Room room){
     printf("Now in %s\n",room.name);
-    printf("%s",room.description);
+    if(room.state == STATE_OK || room.state == STATE_VISIBLE){
+        if(strcmp(room.name,"Dressing Room") == 0 && dog_avoided != 0){
+            printf("The room has got 3 doors.\nnorth) Dark Room,\nsouth) Store Room,\nup) Cell Room\n");
+        }
+        else if(strcmp(room.name,"Library Room") == 0 && sculp_avoided != 0){
+            printf("The room has got 1 door.\ndown) Hall Room\n");
+        }
+        else if(strcmp(room.name,"Cell Room") == 0 && sculp_avoided != 0){
+            printf("Rohan's'cell is unlocked now.His hands and feet are tied with ropes.The room has got 1 door.\ndown) Dressing Room\n");
+        }
+        else{
+            printf("%s",room.description);
+        }
+    }
+    else if(room.state == STATE_DARK){
+        printf("This room is dark\n");
+    }
+    else if(room.state == STATE_INVISIBLE){
+        printf("The contents of this room is invisible\n");
+    }
+    else if(room.state == STATE_UNAVAILABLE){
+        printf("you don't have enough points to enter the room\n");
+    }
 }
 
 void look(Item items[],Room room,int n){
     int i,size = 0;
     Item * itms = (Item*)malloc(sizeof(Item)*n);
     for(int i = 0 ; i < n ; i++){
-        if(strcmp((items[i].location)->name,room.name) == 0){
-            itms[size++] = items[i];
+        if(items[i].state == STATE_NOT_TAKEN){
+            if(strcmp((items[i].location)->name,room.name) == 0){
+                itms[size++] = items[i];
+            }
         }
     }
     if(size!=0){

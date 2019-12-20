@@ -3,8 +3,9 @@
 
 #include "rooms.h"
 
-#define STATE_UNUSED -1
+#define STATE_UNUSED -3
 #define STATE_USED    0
+#define STATE_NOT_TAKEN    3
 
 typedef struct Item
 {
@@ -38,6 +39,9 @@ extern Item items[];
 #define safe (&items+16)
 #define grandchild (&items+17)
 
-#define MAX_ITEM 12
+#define MAX_ITEM 11
+
+#define WIN 99999
+#define LOSE -99999
 
 #endif
