@@ -44,4 +44,7 @@ extern Item items[];
 #define WIN 99999
 #define LOSE -99999
 
+int get_item(Item items[],char * str,int n);
+int use_item(Room * room,Item items[],char * item_name,int n);
+
 #endif

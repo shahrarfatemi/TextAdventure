@@ -1,5 +1,5 @@
-//#include "items.h"
-//#include <string.h>
+#include "items.h"
+#include <string.h>
 
 int get_item(Item items[],char * str,int n){
     for(int i = 0 ; i < n ; i++){

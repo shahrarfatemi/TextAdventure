@@ -1,17 +1,8 @@
-#include "rooms.h"
 #include "items.h"
+#include "rooms.h"
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-
-#define entry_room rooms[0]
-#define store_room rooms[1]
-#define hall_room rooms[2]
-#define dark_room rooms[3]
-#define library_room rooms[4]
-#define dressing_room rooms[5]
-#define dim_room rooms[6]
-#define cell_room rooms[7]
 
 int dog_avoided = 0;
 int sculp_avoided = 0;
@@ -29,7 +20,6 @@ int after_(Room room){
 }
 
 int get_next_room(Room rooms[],Room current_room,char* dir){
-    Room temp = {"","",0,NULL,0};
     if(strcmp(current_room.name,"Entry Room") == 0){
         if(strcmp(dir,"north") == 0){
             return 2;

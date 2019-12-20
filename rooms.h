@@ -30,4 +30,17 @@ extern Room rooms[];
 #define dim_room rooms[6]
 #define cell_room rooms[7]
 
+struct Item;
+
+
+extern int dog_avoided;
+extern int sculp_avoided;
+extern int cell_unlocked;
+
+int before_(Room room);
+int after_(Room room);
+int get_next_room(Room rooms[],Room current_room,char* dir);
+void describe_current_room(Room room);
+void look(struct Item *items,Room room,int n);
+
 #endif
