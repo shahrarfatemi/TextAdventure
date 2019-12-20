@@ -8,16 +8,6 @@ int dog_avoided = 0;
 int sculp_avoided = 0;
 int cell_unlocked = 0;
 
-int before_(Room room){
-    int score;
-    return score;
-}
-
-int after_(Room room){
-    int score = 10;
-    printf("score : %d\n",score);
-    return score;
-}
 
 int get_next_room(Room rooms[],Room current_room,char* dir){
     if(strcmp(current_room.name,"Entry Room") == 0){

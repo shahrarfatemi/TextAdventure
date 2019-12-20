@@ -97,7 +97,7 @@ int parse_and_exec( char * cmd)
             printf("I'm %s-ing \n", verb);
             describe_current_room(current_room);
             if(current_room.state == STATE_DARK || current_room.state == STATE_INVISIBLE){
-                printf("The contents of the room are hidden\n");
+                //printf("The contents of the room are hidden\n");
             }
             else{
                 look(items,current_room,MAX_ITEM);
@@ -119,6 +119,7 @@ int parse_and_exec( char * cmd)
                 }
                 current_room = rooms[index];
                 current_room_index = index;
+                //printf("state : %d\n",current_room.state);
                 describe_current_room(current_room);
             }
         }
@@ -162,7 +163,7 @@ int parse_and_exec( char * cmd)
                 }
             }
             if(found != -1){
-                int result = use_item(&current_room,items,noun,MAX_ITEM);
+                int result = use_item(rooms,items,noun,MAX_ITEM,current_room_index);
                 int index = get_item(items,noun,MAX_ITEM);
                 if(items[index].state == STATE_USED){
                     drop_item_from_my_bag(noun);
@@ -201,6 +202,18 @@ int parse_and_exec( char * cmd)
                 }
             }
         }
+        else if(strcmp(verb, "inventory") == 0)
+        {
+            if(number_of_items == 0){
+                printf("My sack is empty!!\n");
+            }
+            else{    
+                printf("Items I have now:\n");
+                for(int i = 0 ; i < number_of_items ; i++){
+                    printf("%d) %s  =>  %s\n",i+1,my_items[i].name,my_items[i].description);
+                }
+            }
+        }
         else 
         {
             printf("I don't know how to %s\n", verb);
@@ -209,14 +222,6 @@ int parse_and_exec( char * cmd)
     }
 
     return true;
-}
-
-void before_entering(){
-    //
-}
-
-void after_entering(){
-    //
 }
 
 void init(){
@@ -261,7 +266,7 @@ void init(){
     items[5] = (Item){"spellcard","A spell is imprinted on it.",&hall_room,NULL,200,STATE_NOT_TAKEN};
     items[6] = (Item){"fireflies","A box of fire flies.",&hall_room,NULL,100,STATE_NOT_TAKEN};
     items[7] = (Item){"locket","An expensive locket",&dim_room,NULL,50,STATE_NOT_TAKEN};
-    items[8] = (Item){"invisible-cloak","Wearing it can make someone invisible",&store_room,NULL,100,STATE_NOT_TAKEN};
+    items[8] = (Item){"invisible-cloak","Wearing it can make you invisible",&store_room,NULL,100,STATE_NOT_TAKEN};
     items[9] = (Item){"diamond","A pearl",&store_room,NULL,-50,STATE_NOT_TAKEN};
     items[10] = (Item){"grandchild","She is the grandchild of the witch that captured Rohan",&dark_room,NULL,100,STATE_NOT_TAKEN};
     //items[11] = (Item){"sculpture","The sculpture of a previous captive",&library_room,//NULL,300,STATE_UNUSED};
@@ -279,7 +284,7 @@ int main()
     current_room_index = 0;
     number_of_items = 0;
     total_score = 50;
-    describe_current_room(current_room);
+    describe_current_room(rooms[0]);
 
     while(parse_and_exec(input) && get_input())
     {

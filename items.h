@@ -45,6 +45,6 @@ extern Item items[];
 #define LOSE -99999
 
 int get_item(Item items[],char * str,int n);
-int use_item(Room * room,Item items[],char * item_name,int n);
+int use_item(Room * room,Item items[],char * item_name,int n,int in);
 
 #endif
